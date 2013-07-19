@@ -2,6 +2,7 @@
 
 namespace Overblog\ThriftBundle\Factory;
 
+use Overblog\ThriftBundle\WrapHandler\WrapHandler;
 use Overblog\ThriftBundle\ClassLoader\ThriftLoader;
 use Overblog\ThriftBundle\ClassLoader\ApcThriftLoader;
 
@@ -15,15 +16,17 @@ class ThriftFactory
 {
     protected $services;
     protected $debug;
+    protected $dispatcher;
 
     /**
      * Inject dependencies
      * @param array $services
      * @param boolean $debug
      */
-    public function __construct(Array $services, $debug = false)
+    public function __construct(Array $services, $dispatcher, $debug = false)
     {
         $this->services = $services;
+        $this->dispatcher = $dispatcher;
         $this->debug = $debug;
     }
 
@@ -90,6 +93,7 @@ class ThriftFactory
     {
         $classe = sprintf('%s\%sProcessor', $this->services[$service]['namespace'], $this->services[$service]['className']);
 
+        $handler = new WrapHandler($handler,$this->dispatcher);
         return new $classe($handler);
     }
 
