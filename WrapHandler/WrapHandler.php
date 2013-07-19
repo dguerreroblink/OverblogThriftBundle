@@ -6,6 +6,7 @@ use Overblog\ThriftBundle\Event\ThriftExceptionEvent;
 use Overblog\ThriftBundle\Event\ThriftResponseEvent;
 use Overblog\ThriftBundle\Event\ThriftRequestEvent;
 use Overblog\ThriftBundle\Event\ThriftEvents;
+use Thrift\Exception\TException;
 
 class WrapHandler {
 	
@@ -28,12 +29,12 @@ class WrapHandler {
 		try{
 			$return = call_user_func_array(array($this->_handler, $method), $args);
 		}catch (TException $e){
-			
 			$this->_dispacher->dispatch(ThriftEvents::THRIFT_EXCEPTION,
 					new ThriftExceptionEvent($service, $method, $e));
 			
 			throw $e;
 		}
+		
 		
 		$this->_dispacher->dispatch(ThriftEvents::THRIFT_RESPONSE,
 				new ThriftResponseEvent($service, $method, array($return)));
